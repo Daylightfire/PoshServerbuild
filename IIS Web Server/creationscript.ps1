@@ -5,12 +5,12 @@
 ###
 
 # Adding loggin
-$LogScriptPath = ""
-./$LogScriptPath
+
+.$PSScriptRoot\JJlog.ps1
 
 #InstallIIS
 try {
-    ./installIIS.ps1 
+    .$PSScriptRoot\installIIS.ps1 
 }
 catch {
     write-log -Message $Error -Severity Error 
@@ -20,7 +20,7 @@ catch {
 #Create sites
 
 try {
-    ./Sitecreate.ps1
+    .$PSScriptRoot\Sitecreate.ps1
 }
 catch {
     write-log -Message $Error -Severity Error
