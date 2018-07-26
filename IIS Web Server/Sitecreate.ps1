@@ -1,7 +1,7 @@
 ﻿# Sites
 Import-Module WebAdministration
 #log
-.\JJlog.ps1 -logname 'log.log'
+.\JJlog.ps1 -logfile 'log.log'
 
 $sitename = 'Rootops'
 $HH = 'rootops.co.uk'
@@ -11,19 +11,18 @@ $Sitepath = Join-Path -Path $websitesRoot -ChildPath $sitename
 
 # create required website folders
 
-Join-Path $websitesRoot
-write-log -message "Creating Folders" -severity Information
-if (Test-Path -Path $websitesRoot){write-log -message "Website directory exists" -severity Warning }
+write-log -message "Creating Folders" -severity Info
+if (Test-Path -Path $websitesRoot){write-log -message "Website directory exists" -severity Warn }
     else{New-Item -Path C:\ -name Websites -ItemType Directory}
 
 
-if (Test-Path -Path $Sitepath){write-log -message "$sitename directory exists" -severity Warning}
+if (Test-Path -Path $Sitepath){write-log -message "$sitename directory exists" -severity Warn}
     else{New-Item -Path C:\Websites\$sitename -ItemType Directory}
 
 # Application pool creation
-write-log -message "Application pools" -severity Information
+write-log -message "Application pools" -severity Info
 try {
-    Write-Log -Message "Creating Application Pool" -severity Information
+    Write-Log -Message "Creating Application Pool" -severity Info
     New-WebAppPool -name $sitename  -force
 }
 catch {
@@ -36,7 +35,7 @@ try {
     Write-Log -Message "Setting Application Pool Config" -severity Information
     $appPool = Get-Item $sitename
     $appPool.processModel.identityType = "NetworkService"
-    $appPool.enable32BitAppOnWin64 = 1
+    $appPool.enable32BitAppOnWin64 = 'False'
     $appPool | Set-Item -ErrorAction Stop
 
 }

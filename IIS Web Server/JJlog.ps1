@@ -3,9 +3,9 @@
 # use via .source JJlog.ps1
 ###
 param(
-    [Parameter(Mandatory=$True)]
+    [Parameter(Mandatory=$False)]
     [string]
-    $logname
+    $logfile
 )
 
 function Write-Log {
