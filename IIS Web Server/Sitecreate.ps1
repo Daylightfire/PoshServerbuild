@@ -1,7 +1,7 @@
 ﻿# Sites
 Import-Module WebAdministration
 #log
-.\JJlog.ps1 -logfile 'log.log'
+.$PSScriptRoot\jjlog.ps1 -logfile 'loggy'
 
 $sitename = 'Rootops'
 $HH = 'rootops.co.uk'
@@ -11,47 +11,47 @@ $Sitepath = Join-Path -Path $websitesRoot -ChildPath $sitename
 
 # create required website folders
 
-write-log -message "Creating Folders" -severity Info
-if (Test-Path -Path $websitesRoot){write-log -message "Website directory exists" -severity Warn }
+write-log -severity Info -message "Creating Folders" 
+if (Test-Path -Path $websitesRoot){write-log -severity Warn -message "Website directory exists"  }
     else{New-Item -Path C:\ -name Websites -ItemType Directory}
 
 
-if (Test-Path -Path $Sitepath){write-log -message "$sitename directory exists" -severity Warn}
+if (Test-Path -Path $Sitepath){write-log -severity Warn -message "$sitename directory exists" }
     else{New-Item -Path C:\Websites\$sitename -ItemType Directory}
 
 # Application pool creation
-write-log -message "Application pools" -severity Info
+write-log -severity Info -message "Application pools" 
 try {
-    Write-Log -Message "Creating Application Pool" -severity Info
-    New-WebAppPool -name $sitename  -force
+    Write-Log -severity Info -Message "Creating Application Pool" 
+    New-WebAppPool -name $sitename  -force -ErrorAction Stop
 }
 catch {
-    Write-Log -Message "application pool creating FAILED" -severity Error
-    Write-Log -Message $Error -severity Error
+    Write-Log -severity Error -Message "application pool creating FAILED" 
+    Write-Log -severity Error -Message $_.Exception.Message 
 }
 
 # Update App pool settings
 try {
-    Write-Log -Message "Setting Application Pool Config" -severity Information
-    $appPool = Get-Item $sitename
+    Write-Log -severity Info -Message "Setting Application Pool Config" 
+    $appPool = Get-Item IIS:\AppPools\$sitename
     $appPool.processModel.identityType = "NetworkService"
     $appPool.enable32BitAppOnWin64 = 'False'
     $appPool | Set-Item -ErrorAction Stop
 
 }
 catch {
-    Write-Log -Message "Application Pool Config Failed" -severity Error
-    Write-Log -Message $Error -severity Error
+    Write-Log -severity Error -Message "Application Pool Config Failed" 
+    Write-Log -severity Error -Message $_.Exception.Message  
 }
 
 # Site creation
 try {
-    Write-Log -message "Creating WebSite" -severity Information
-    $site = new-WebSite -name $sitename -PhysicalPath $Sitepath -HostHeader $HH -ApplicationPool $appPool -force
+    Write-Log -severity Info -message "Creating WebSite" 
+    $site = new-WebSite -name $sitename -PhysicalPath $Sitepath -HostHeader $HH -ApplicationPool $sitename -force
 }
 catch {
-    Write-Log -Message "Site Creation Failed" -severity Error
-    Write-Log -Message $Error -severity Error
+    Write-Log -severity Error -Message "Site Creation Failed" 
+    Write-Log -severity Error -Message $_.Exception.Message 
 }
 
 

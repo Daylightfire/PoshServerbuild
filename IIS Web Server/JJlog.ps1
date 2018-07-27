@@ -7,6 +7,16 @@ param(
     [string]
     $logfile
 )
+$logroot = 'C:\logs\'
+$log = $logfile+'.log'
+$logger = $logroot+$log
+#if(Test-Path $logroot){
+   # write-host "logs are stored in $logroot$log"
+   # }
+#else{
+   # New-Item -Path $logroot -ItemType 'Directory'
+   # write-host "logs are stored in $logroot\$log"
+   # }
 
 function Write-Log {
     [CmdletBinding()]
@@ -18,20 +28,17 @@ function Write-Log {
 
         [Parameter(Mandatory=$True)]
         [string]
-        $Message,
+        $Message
 
-        [Parameter(Mandatory=$False)]
-        [string]
-        $logfile
-    )
+  )
 
-    [pscustomobject]$Line=@{
+    $line=[pscustomobject]@{
         Time = (Get-Date -f g)
         Message = $Message
         Severity = $Severity
     } 
     If($logfile) {
-        Add-Content $logfile -Value $Line
+        Add-Content $logger -Value $Line
     }
     Else {
         Write-Output $Line
