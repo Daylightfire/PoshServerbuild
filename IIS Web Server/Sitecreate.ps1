@@ -7,6 +7,13 @@ $sitename = 'Rootops'
 $HH = 'rootops.co.uk'
 $websitesRoot = 'C:\websites'
 $Sitepath = Join-Path -Path $websitesRoot -ChildPath $sitename
+$body = '<html>
+    <header><title>This is title</title></header>
+    <body>
+     Hello world '+$sitename+'
+    </body>
+    </html>'
+
 
 
 # create required website folders
@@ -54,9 +61,37 @@ catch {
     Write-Log -severity Error -Message $_.Exception.Message 
 }
 
-
+Write-Log -severity Info -Message "Housekeeping default application pools and websites" 
 # Remove Default site
+if (Get-Website -Name "Default Web Site"){
+    Write-Log -severity Warn -Message "Default website exists, removing" 
+    Remove-Website -Name "Default Web Site"
+}
 
 # Remove Default application pools
-#if (Get-Item )
-#Remove-WebAppPool
+if (Test-Path 'IIS:\AppPools\.NET v4.5'){
+    Write-Log -severity Warn -Message ".NET v4.5 app pool exists, removing" 
+    Remove-WebAppPool -Name '.NET v4.5'
+}
+if (Test-Path 'IIS:\AppPools\.NET v4.5 Classic'){
+    Write-Log -severity Warn -Message ".NET v4.5 Classic app pool exists, removing" 
+    Remove-WebAppPool -Name '.NET v4.5 Classic'
+}
+if (Test-Path 'IIS:\AppPools\DefaultAppPool'){
+    Write-Log -severity Warn -Message "DefaultAppPool app pool exists, removing" 
+    Remove-WebAppPool -Name 'DefaultAppPool'
+}
+
+# Add test page
+Write-Log -severity Info -Message "Adding Test Page"  
+try {
+    Add-Content -Path $Sitepath'\default.html' -Value $body -ErrorAction Stop
+}
+catch {
+    Write-Log -severity Error -Message "Test page failed" 
+    Write-Log -severity Error -Message $_.Exception.Message 
+}
+
+
+
+Write-Log -severity Info -Message "Set up Completed"  
